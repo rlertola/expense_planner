@@ -48,62 +48,29 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransactions = [
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 10.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'groceries',
-    //   amount: 29.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 69.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'groceries',
-    //   amount: 29.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 69.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'groceries',
-    //   amount: 29.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 69.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'groceries',
-    //   amount: 29.99,
-    //   date: DateTime.now(),
-    // ),
-  ];
-
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool _showChart = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+  }
+
+  @override
+  dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    print('disposed');
+    super.dispose();
+  }
+
   List<Transaction> get _recentTransactions {
-    return _userTransactions.where((tx) {
+    return userTransactions.where((tx) {
       return tx.date.isAfter(
         DateTime.now().subtract(
           (Duration(days: 7)),
@@ -122,13 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     setState(() {
-      _userTransactions.add(newTx);
+      userTransactions.add(newTx);
     });
   }
 
   void _deleteTransaction(String id) {
     setState(() {
-      _userTransactions.removeWhere((tx) {
+      userTransactions.removeWhere((tx) {
         return tx.id == id;
       });
     });
@@ -236,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mediaQuery.padding.top) *
           0.75,
       child: TransactionList(
-        transactions: _userTransactions,
+        transactions: userTransactions,
         deleteTx: _deleteTransaction,
       ),
     );
